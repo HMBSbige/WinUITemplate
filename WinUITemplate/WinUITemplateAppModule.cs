@@ -1,17 +1,25 @@
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
+using Splat;
+using Splat.Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
+using WinUITemplate.ViewModels;
 
 namespace WinUITemplate
 {
+	[DependsOn(
+		typeof(AbpAutofacModule),
+		typeof(WinUITemplateViewModelsModule)
+		)]
 	[UsedImplicitly]
-	[DependsOn(typeof(AbpAutofacModule))]
 	public class WinUITemplateAppModule : AbpModule
 	{
-		public override void ConfigureServices(ServiceConfigurationContext context)
+		public override void PreConfigureServices(ServiceConfigurationContext context)
 		{
-			context.Services.AddSingleton<MainWindow>();
+			context.Services.UseMicrosoftDependencyResolver();
+			Locator.CurrentMutable.InitializeSplat();
+			Locator.CurrentMutable.InitializeReactiveUI(RegistrationNamespace.Wpf);
 		}
 	}
 }

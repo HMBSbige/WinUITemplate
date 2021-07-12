@@ -1,9 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUITemplate", "WinUITemplate\WinUITemplate.csproj", "{BBA47F4A-141A-4C95-99F8-9BD42B654F12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinUITemplate", "WinUITemplate\WinUITemplate.csproj", "{BBA47F4A-141A-4C95-99F8-9BD42B654F12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUITemplate.ViewModels", "WinUITemplate.ViewModels\WinUITemplate.ViewModels.csproj", "{9F15155E-A168-487F-ABE6-BD45FAA7ECC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +16,10 @@ Global
 		{BBA47F4A-141A-4C95-99F8-9BD42B654F12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBA47F4A-141A-4C95-99F8-9BD42B654F12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBA47F4A-141A-4C95-99F8-9BD42B654F12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F15155E-A168-487F-ABE6-BD45FAA7ECC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F15155E-A168-487F-ABE6-BD45FAA7ECC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F15155E-A168-487F-ABE6-BD45FAA7ECC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F15155E-A168-487F-ABE6-BD45FAA7ECC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
