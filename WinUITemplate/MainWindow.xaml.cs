@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using ModernWpf.Controls;
 using ReactiveUI;
 using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Volo.Abp.DependencyInjection;
@@ -10,10 +12,11 @@ namespace WinUITemplate
 {
 	public partial class MainWindow : ISingletonDependency
 	{
-		public MainWindow(
-			MainWindowViewModel viewModel,
-			SettingViewModel settings
-			)
+		public IAbpLazyServiceProvider LazyServiceProvider { get; set; } = null!;
+
+		public IServiceProvider ServiceProvider { get; set; } = null!;
+
+		public MainWindow(MainWindowViewModel viewModel)
 		{
 			InitializeComponent();
 			ViewModel = viewModel;
@@ -27,7 +30,7 @@ namespace WinUITemplate
 				{
 					if (args.EventArgs.IsSettingsSelected)
 					{
-						ViewModel.Router.Navigate.Execute(settings);
+						ViewModel.Router.Navigate.Execute(ServiceProvider.GetRequiredService<SettingViewModel>());
 						return;
 					}
 
@@ -40,11 +43,13 @@ namespace WinUITemplate
 					{
 						case @"1":
 						{
-							//ViewModel.Router.Navigate.Execute();
+							ViewModel.Router.Navigate.Execute(ServiceProvider.GetRequiredService<LogViewModel>());
 							break;
 						}
 					}
 				}).DisposeWith(d);
+
+				NavigationView.SelectedItem = NavigationView.MenuItems.OfType<NavigationViewItem>().First();
 			});
 		}
 	}

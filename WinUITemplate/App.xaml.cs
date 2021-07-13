@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using SingleInstance;
+using Splat.Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
@@ -108,6 +109,7 @@ namespace WinUITemplate
 		private void Initialize(IServiceProvider serviceProvider)
 		{
 			_application.Initialize(serviceProvider);
+			serviceProvider.UseMicrosoftDependencyResolver();
 		}
 
 		private static IHost CreateHostBuilder()

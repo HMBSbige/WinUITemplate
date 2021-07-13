@@ -28,6 +28,7 @@ namespace WinUITemplate
 		public override void ConfigureServices(ServiceConfigurationContext context)
 		{
 			context.Services.TryAddSingleton(_ => new SingleInstanceService(ViewConstants.Identifier));
+			context.Services.TryAddTransient<RoutingState>();
 		}
 	}
 }

@@ -7,8 +7,8 @@ namespace WinUITemplate.ViewModels
 		typeof(MainWindowViewModel),
 		typeof(IScreen)
 		)]
-	public sealed class MainWindowViewModel : ViewModelBase, IScreen
+	public sealed class MainWindowViewModel : ViewModelBase, IScreen, ISingletonDependency
 	{
-		public RoutingState Router { get; } = new();
+		public RoutingState Router => LazyServiceProvider.LazyGetRequiredService<RoutingState>();
 	}
 }
