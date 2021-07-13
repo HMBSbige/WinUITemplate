@@ -20,6 +20,7 @@ namespace WinUITemplate
 
 		public App()
 		{
+			EnvironmentHelper.SetExePathAsCurrentDirectory();
 			Log.Logger = new LoggerConfiguration()
 #if DEBUG
 				.MinimumLevel.Debug()
@@ -114,10 +115,7 @@ namespace WinUITemplate
 			return Host.CreateDefaultBuilder()
 					.UseAutofac()
 					.UseSerilog()
-					.ConfigureServices((hostContext, services) =>
-					{
-						services.AddApplication<WinUITemplateAppModule>();
-					})
+					.ConfigureServices((hostContext, services) => services.AddApplication<WinUITemplateAppModule>())
 					.Build();
 		}
 	}
