@@ -9,9 +9,10 @@ namespace WinUITemplate.Views
 	[UsedImplicitly]
 	public partial class SettingView : ITransientDependency
 	{
-		public SettingView()
+		public SettingView(SettingViewModel viewModel)
 		{
 			InitializeComponent();
+			ViewModel = viewModel;
 		}
 	}
 }

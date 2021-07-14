@@ -10,9 +10,10 @@ namespace WinUITemplate.Views
 	[UsedImplicitly]
 	public partial class LogView : ITransientDependency
 	{
-		public LogView()
+		public LogView(LogViewModel viewModel)
 		{
 			InitializeComponent();
+			ViewModel = viewModel;
 
 			this.WhenActivated(d =>
 			{
