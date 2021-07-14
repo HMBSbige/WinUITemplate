@@ -31,6 +31,10 @@
                 <!-- ModernWPF controls resources -->
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
+            <!-- Override Colors -->
+            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="Transparent" />
+            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="Transparent" />
+            <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="Transparent" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
