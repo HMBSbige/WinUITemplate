@@ -30,7 +30,7 @@ namespace WinUITemplate
 				{
 					if (args.EventArgs.IsSettingsSelected)
 					{
-						ViewModel.Router.Navigate.Execute(ServiceProvider.GetRequiredService<SettingViewModel>());
+						ViewModel.Router.NavigateAndReset.Execute(ServiceProvider.GetRequiredService<SettingViewModel>());
 						return;
 					}
 
@@ -43,7 +43,7 @@ namespace WinUITemplate
 					{
 						case @"1":
 						{
-							ViewModel.Router.Navigate.Execute(ServiceProvider.GetRequiredService<LogViewModel>());
+							ViewModel.Router.NavigateAndReset.Execute(ServiceProvider.GetRequiredService<LogViewModel>());
 							break;
 						}
 					}
