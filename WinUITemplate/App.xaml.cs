@@ -1,23 +1,28 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReactiveUI;
 using Serilog;
 using Serilog.Events;
 using SingleInstance;
 using Splat.Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 using Volo.Abp;
+using WinUITemplate.Services;
 using WinUITemplate.Utils;
 
+#pragma warning disable VSTHRD100
 namespace WinUITemplate
 {
 	public partial class App
 	{
 		private readonly IHost _host;
+		private readonly CompositeDisposable _disposable;
 		private readonly SingleInstanceService _singleInstance;
 		private readonly IAbpApplicationWithExternalServiceProvider _application;
+		private readonly ArgumentsHandleService _argumentsHandleService;
 
 		public App()
 		{
@@ -39,8 +44,10 @@ namespace WinUITemplate
 				.CreateLogger();
 
 			_host = CreateHostBuilder();
-			_singleInstance = _host.Services.GetRequiredService<SingleInstanceService>();
+			_disposable = _host.Services.GetRequiredService<CompositeDisposable>();
+			_singleInstance = _host.Services.GetRequiredService<SingleInstanceService>().DisposeWith(_disposable);
 			_application = _host.Services.GetRequiredService<IAbpApplicationWithExternalServiceProvider>();
+			_argumentsHandleService = _host.Services.GetRequiredService<ArgumentsHandleService>();
 		}
 
 		protected override async void OnStartup(StartupEventArgs e)
@@ -49,17 +56,25 @@ namespace WinUITemplate
 			{
 				Current.Events().DispatcherUnhandledException.Subscribe(args => UnhandledException(args.Exception));
 
-				if (!_singleInstance.IsFirstInstance)
+				if (!_singleInstance.TryStartSingleInstance())
 				{
-					Log.Information(@"This is not the first application instance, sending show command...");
-					_singleInstance.PassArgumentsToFirstInstance(e.Args.Append(ViewConstants.ParameterShow));
-					Current.Shutdown((int)ExitCode.NotFirstInstance);
+					if (await _argumentsHandleService.SendShowCommandAsync())
+					{
+						Current.Shutdown((int)ExitCode.Success);
+					}
+					else
+					{
+						Current.Shutdown((int)ExitCode.NotFirstInstance);
+					}
 					return;
 				}
 
 				Log.Information(@"Starting WPF host...");
-				_singleInstance.ArgumentsReceived.ObserveOnDispatcher().Subscribe(ArgumentsReceived);
-				_singleInstance.ListenForArgumentsFromSuccessiveInstances();
+				_singleInstance.Received
+						.ObserveOn(RxApp.TaskpoolScheduler)
+						.Subscribe(_argumentsHandleService.ArgumentsReceived)
+						.DisposeWith(_disposable);
+				_singleInstance.StartListenServer();
 
 				await _host.StartAsync();
 				Initialize(_host.Services);
@@ -68,19 +83,24 @@ namespace WinUITemplate
 			catch (Exception ex)
 			{
 				Log.Fatal(ex, @"Host terminated unexpectedly!");
+				Current.Shutdown((int)ExitCode.UnknownFailed);
 			}
 		}
 
 		protected override async void OnExit(ExitEventArgs e)
 		{
 			Log.Information($@"Exiting with code: {(ExitCode)e.ApplicationExitCode}...");
-			_singleInstance.Dispose();
+
+			_disposable.Dispose();
+
 			if (_application.ServiceProvider is not null)
 			{
 				_application.Shutdown();
 			}
+
 			await _host.StopAsync();
 			_host.Dispose();
+
 			Log.CloseAndFlush();
 			Environment.Exit(e.ApplicationExitCode);
 		}
@@ -95,14 +115,6 @@ namespace WinUITemplate
 			finally
 			{
 				Current.Shutdown((int)ExitCode.UnknownFailed);
-			}
-		}
-
-		private void ArgumentsReceived(string[] args)
-		{
-			if (args.Contains(ViewConstants.ParameterShow))
-			{
-				_host.Services.GetRequiredService<MainWindow>().ShowWindow();
 			}
 		}
 

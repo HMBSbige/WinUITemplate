@@ -4,6 +4,7 @@ using ReactiveUI;
 using SingleInstance;
 using Splat;
 using Splat.Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Disposables;
 using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
 using WinUITemplate.Utils;
@@ -29,6 +30,7 @@ namespace WinUITemplate
 		{
 			context.Services.TryAddSingleton(_ => new SingleInstanceService(ViewConstants.Identifier));
 			context.Services.TryAddTransient<RoutingState>();
+			context.Services.TryAddTransient(_ => new CompositeDisposable());
 		}
 	}
 }
