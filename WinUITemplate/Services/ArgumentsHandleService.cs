@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using SingleInstance;
 using System;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,20 +43,18 @@ namespace WinUITemplate.Services
 		public void ArgumentsReceived((string, Action<string>) receive)
 		{
 			var (message, endFunc) = receive;
-			switch (message)
+			var args = message
+				.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+				.ToHashSet();
+
+			if (args.Contains(ViewConstants.ParameterShow))
 			{
-				case ViewConstants.ParameterShow:
-				{
-					RxApp.MainThreadScheduler.Schedule(() => LazyServiceProvider.LazyGetRequiredService<MainWindow>().ShowWindow());
-					endFunc(ViewConstants.ParameterShow);
-					break;
-				}
-				default:
-				{
-					endFunc(@"???");
-					break;
-				}
+				RxApp.MainThreadScheduler.Schedule(() => LazyServiceProvider.LazyGetRequiredService<MainWindow>().ShowWindow());
+				endFunc(ViewConstants.ParameterShow);
+				return;
 			}
+
+			endFunc(@"???");
 		}
 	}
 }
