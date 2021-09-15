@@ -14,10 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion" Version="0.8.2" />
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.2" />
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.2" />
-    <PackageReference Include="ReactiveUI.WinUI" Version="16.2.1" />
+    <PackageReference Include="Microsoft.ProjectReunion" Version="0.8.3" />
+    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.3" />
+    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.3" />
+    <PackageReference Include="ReactiveUI.WinUI" Version="16.2.6" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 </Project>
