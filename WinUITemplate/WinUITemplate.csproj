@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentWPF" Version="0.10.1" />
+    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="HMBSbige.SingleInstance" Version="5.1.0-alpha.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.4" />
