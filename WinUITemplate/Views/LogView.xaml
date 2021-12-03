@@ -1,5 +1,5 @@
-<reactiveUi:ReactiveUserControl 
-    x:TypeArguments="viewModels:LogViewModel" 
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="viewModels:LogViewModel"
     x:Class="WinUITemplate.Views.LogView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

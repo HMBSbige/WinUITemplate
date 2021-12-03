@@ -1,9 +1,8 @@
-namespace WinUITemplate.Utils
+namespace WinUITemplate.Utils;
+
+public enum ExitCode
 {
-	public enum ExitCode
-	{
-		Success = 0,
-		UnknownFailed = 1,
-		NotFirstInstance = 2
-	}
+	Success = 0,
+	UnknownFailed = 1,
+	NotFirstInstance = 2
 }

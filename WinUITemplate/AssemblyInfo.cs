@@ -1,5 +1,3 @@
-using System.Windows;
-
 [assembly: ThemeInfo(
 		//where theme specific resource dictionaries are located
 		//(used if a resource is not found in the page,
