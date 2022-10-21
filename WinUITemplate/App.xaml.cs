@@ -81,13 +81,13 @@ public partial class App
 
 		if (_application.ServiceProvider is not null)
 		{
-			_application.Shutdown();
+			await _application.ShutdownAsync();
 		}
 
 		await _host.StopAsync();
 		_host.Dispose();
 
-		Log.CloseAndFlush();
+		await Log.CloseAndFlushAsync();
 		Environment.Exit(e.ApplicationExitCode);
 	}
 
