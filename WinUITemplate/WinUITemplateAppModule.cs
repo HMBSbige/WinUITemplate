@@ -1,18 +1,16 @@
 global using JetBrains.Annotations;
+global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
-global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using ModernWpf;
 global using ModernWpf.Controls;
 global using ReactiveMarbles.ObservableEvents;
 global using ReactiveUI;
 global using Serilog;
-global using Serilog.Events;
 global using SingleInstance;
 global using Splat;
 global using Splat.Microsoft.Extensions.DependencyInjection;
-global using System.Diagnostics;
 global using System.IO;
 global using System.Reactive.Concurrency;
 global using System.Reactive.Disposables;
@@ -41,12 +39,24 @@ public class WinUITemplateAppModule : AbpModule
 		context.Services.UseMicrosoftDependencyResolver();
 		Locator.CurrentMutable.InitializeSplat();
 		Locator.CurrentMutable.InitializeReactiveUI(RegistrationNamespace.Wpf);
+
+		context.Services.ReplaceConfiguration(new ConfigurationBuilder()
+#if DEBUG
+			.AddJsonFile(@"appsettings.Development.json", true, true)
+#else
+			.AddJsonFile(@"appsettings.json", true, true)
+#endif
+			.AddEnvironmentVariables()
+			.Build());
 	}
 
 	public override void ConfigureServices(ServiceConfigurationContext context)
 	{
+		IConfiguration configuration = context.Services.GetConfiguration();
+
 		context.Services.TryAddSingleton(_ => new SingleInstanceService(ViewConstants.Identifier));
 		context.Services.TryAddTransient<RoutingState>();
 		context.Services.TryAddTransient(_ => new CompositeDisposable());
+		context.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger(), true));
 	}
 }

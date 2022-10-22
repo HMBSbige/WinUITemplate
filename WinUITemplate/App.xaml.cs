@@ -1,39 +1,26 @@
 #pragma warning disable VSTHRD100
-
 namespace WinUITemplate;
 
 public partial class App
 {
-	private readonly IHost _host;
+	private readonly IAbpApplicationWithInternalServiceProvider _application;
+
 	private readonly CompositeDisposable _disposable;
 	private readonly SingleInstanceService _singleInstance;
-	private readonly IAbpApplicationWithExternalServiceProvider _application;
 	private readonly ArgumentsHandleService _argumentsHandleService;
 
 	public App()
 	{
 		EnvironmentHelper.SetExePathAsCurrentDirectory();
-		Log.Logger = new LoggerConfiguration()
-#if DEBUG
-			.MinimumLevel.Debug()
-			.WriteTo.Async(c => c.Debug(outputTemplate: ViewConstants.OutputTemplate))
-#else
-			.MinimumLevel.Information()
-#endif
-			.MinimumLevel.Override(@"Microsoft", LogEventLevel.Information)
-			.Enrich.FromLogContext()
-			.WriteTo.Async(c => c.File(ViewConstants.LogFile,
-				outputTemplate: ViewConstants.OutputTemplate,
-				rollingInterval: RollingInterval.Day,
-				rollOnFileSizeLimit: true,
-				fileSizeLimitBytes: ViewConstants.MaxLogFileSize))
-			.CreateLogger();
 
-		_host = CreateHostBuilder();
-		_disposable = _host.Services.GetRequiredService<CompositeDisposable>();
-		_singleInstance = _host.Services.GetRequiredService<SingleInstanceService>().DisposeWith(_disposable);
-		_application = _host.Services.GetRequiredService<IAbpApplicationWithExternalServiceProvider>();
-		_argumentsHandleService = _host.Services.GetRequiredService<ArgumentsHandleService>();
+		_application = AbpApplicationFactory.Create<WinUITemplateAppModule>(options => options.UseAutofac());
+
+		_application.Initialize();
+		_application.ServiceProvider.UseMicrosoftDependencyResolver();
+
+		_disposable = _application.Services.GetRequiredService<CompositeDisposable>();
+		_singleInstance = _application.Services.GetRequiredService<SingleInstanceService>().DisposeWith(_disposable);
+		_argumentsHandleService = _application.Services.GetRequiredService<ArgumentsHandleService>();
 	}
 
 	protected override async void OnStartup(StartupEventArgs e)
@@ -62,9 +49,7 @@ public partial class App
 				.DisposeWith(_disposable);
 			_singleInstance.StartListenServer();
 
-			await _host.StartAsync();
-			Initialize(_host.Services);
-			_host.Services.GetRequiredService<MainWindow>().ShowWindow();
+			_application.Services.GetRequiredService<MainWindow>().ShowWindow();
 		}
 		catch (Exception ex)
 		{
@@ -84,10 +69,8 @@ public partial class App
 			await _application.ShutdownAsync();
 		}
 
-		await _host.StopAsync();
-		_host.Dispose();
-
 		await Log.CloseAndFlushAsync();
+
 		Environment.Exit(e.ApplicationExitCode);
 	}
 
@@ -102,20 +85,5 @@ public partial class App
 		{
 			Current.Shutdown((int)ExitCode.UnknownFailed);
 		}
-	}
-
-	private void Initialize(IServiceProvider serviceProvider)
-	{
-		_application.Initialize(serviceProvider);
-		serviceProvider.UseMicrosoftDependencyResolver();
-	}
-
-	private static IHost CreateHostBuilder()
-	{
-		return Host.CreateDefaultBuilder()
-			.UseAutofac()
-			.UseSerilog()
-			.ConfigureServices((hostContext, services) => services.AddApplication<WinUITemplateAppModule>())
-			.Build();
 	}
 }
