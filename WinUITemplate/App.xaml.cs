@@ -8,6 +8,7 @@ public partial class App
 	private readonly CompositeDisposable _disposable;
 	private readonly SingleInstanceService _singleInstance;
 	private readonly ArgumentsHandleService _argumentsHandleService;
+	private readonly ILogger _logger;
 
 	public App()
 	{
@@ -18,9 +19,10 @@ public partial class App
 		_application.Initialize();
 		_application.ServiceProvider.UseMicrosoftDependencyResolver();
 
-		_disposable = _application.Services.GetRequiredService<CompositeDisposable>();
-		_singleInstance = _application.Services.GetRequiredService<SingleInstanceService>().DisposeWith(_disposable);
-		_argumentsHandleService = _application.Services.GetRequiredService<ArgumentsHandleService>();
+		_disposable = _application.ServiceProvider.GetRequiredService<CompositeDisposable>();
+		_singleInstance = _application.ServiceProvider.GetRequiredService<SingleInstanceService>().DisposeWith(_disposable);
+		_argumentsHandleService = _application.ServiceProvider.GetRequiredService<ArgumentsHandleService>();
+		_logger = _application.ServiceProvider.GetRequiredService<ILogger<App>>();
 	}
 
 	protected override async void OnStartup(StartupEventArgs e)
@@ -42,7 +44,7 @@ public partial class App
 				return;
 			}
 
-			Log.Information(@"Starting WPF host...");
+			_logger.LogInformation(@"Starting WPF host...");
 			_singleInstance.Received
 				.ObserveOn(RxApp.TaskpoolScheduler)
 				.Subscribe(_argumentsHandleService.ArgumentsReceived)
@@ -53,14 +55,14 @@ public partial class App
 		}
 		catch (Exception ex)
 		{
-			Log.Fatal(ex, @"Host terminated unexpectedly!");
+			_logger.LogException(ex);
 			Current.Shutdown((int)ExitCode.UnknownFailed);
 		}
 	}
 
 	protected override async void OnExit(ExitEventArgs e)
 	{
-		Log.Information($@"Exiting with code: {(ExitCode)e.ApplicationExitCode}...");
+		_logger.LogInformation(@"Exiting with code: {code}...", (ExitCode)e.ApplicationExitCode);
 
 		_disposable.Dispose();
 
@@ -69,16 +71,14 @@ public partial class App
 			await _application.ShutdownAsync();
 		}
 
-		await Log.CloseAndFlushAsync();
-
 		Environment.Exit(e.ApplicationExitCode);
 	}
 
-	private static void UnhandledException(Exception ex)
+	private void UnhandledException(Exception ex)
 	{
 		try
 		{
-			Log.Fatal(ex, @"Unhandled exception");
+			_logger.LogException(ex);
 			MessageBox.Show($@"Unhandled exception：{ex}", nameof(WinUITemplate), MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 		finally

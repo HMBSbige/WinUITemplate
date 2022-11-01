@@ -59,4 +59,9 @@ public class WinUITemplateAppModule : AbpModule
 		context.Services.TryAddTransient(_ => new CompositeDisposable());
 		context.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger(), true));
 	}
+
+	public override void OnApplicationShutdown(ApplicationShutdownContext context)
+	{
+		context.ServiceProvider.GetRequiredService<ILoggerProvider>().Dispose();
+	}
 }
