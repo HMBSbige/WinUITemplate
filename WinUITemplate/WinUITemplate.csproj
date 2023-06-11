@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentWPF" Version="0.10.2" />
-    <PackageReference Include="HMBSbige.SingleInstance" Version="6.0.0" />
+    <PackageReference Include="HMBSbige.SingleInstance" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.2.3" PrivateAssets="all" />
